@@ -1,0 +1,27 @@
+
+services:
+  db:
+    image: postgres:15
+    container_name: e2eechat-db
+    restart: always
+    environment:
+      POSTGRES_USER: e2ee
+      POSTGRES_PASSWORD: devpassword
+      POSTGRES_DB: e2eechat
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  server:
+    build: ./server
+    container_name: e2eechat-server
+    depends_on:
+      - db
+    ports:
+      - "4000:4000"
+    environment:
+      DATABASE_DSN: postgres://e2ee:devpassword@db:5432/e2eechat?sslmode=disable
+
+volumes:
+  postgres_data:

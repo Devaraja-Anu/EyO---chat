@@ -1,0 +1,24 @@
+# Go binaries
+**/bin/
+**/*.exe
+**/*.out
+
+# Go build cache
+**/vendor/
+
+# Environment
+.env
+
+# Database
+postgres_data/
+*.sql.dump
+
+# Client secrets (CRITICAL FOR E2EE)
+client/identity.json
+client/sessions/
+client/*.key
+client/*.pem
+
+# OS junk
+.DS_Store
+Thumbs.db

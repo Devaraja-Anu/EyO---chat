@@ -8,6 +8,7 @@
 
 # Environment
 .env
+*.db
 
 # Database
 postgres_data/
@@ -22,3 +23,11 @@ client/*.pem
 # OS junk
 .DS_Store
 Thumbs.db
+
+/dist/
+/bin/
+/build/
+
+*.log
+
+.vscode/

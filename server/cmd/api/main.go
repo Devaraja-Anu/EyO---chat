@@ -8,8 +8,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/devaraja-anu/eyo/server/internals/db"
+	"github.com/devaraja-anu/eyo/server/internals/data"
+	"github.com/devaraja-anu/eyo/server/internals/logger"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
 )
 
 type dbConfig struct {
@@ -22,19 +24,27 @@ type cfg struct {
 	db   dbConfig
 }
 
-type application struct {
-	cfg     cfg
-	logger  *log.Logger
-	queries *db.Queries
-}
+
+	type application struct {
+		cfg     cfg
+		logger  *logger.Logger
+		models 	data.Models
+	}
+
 
 func main() {
 
-	logger := log.New(os.Stdout, "Log: ", log.Ldate|log.Ltime)
+	defaultLogger := log.New(os.Stdout, "MAIN LOG: ", log.Ldate|log.Ltime)
 
-	dsn := os.Getenv("DATABASE_DSN")
+
+	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime)
+
+	godotenv.Load()
+
+	dsn := os.Getenv("DB_URL")
 	if dsn == "" {
-		logger.Fatal("DATABASE_DSN not set")
+		defaultLogger.Fatal("DB_URL not set")
 	}
 
 	cfg := cfg{
@@ -48,17 +58,17 @@ func main() {
 	conn, err := OpenDB(cfg)
 
 	if err != nil {
-		logger.Fatal(err)
+		defaultLogger.Fatal(err)
 	}
 
 	defer conn.Close()
 
-	queries := db.New(conn)
+	models := data.NewModels(conn)
 
 	app := &application{
 		cfg:     cfg,
-		logger:  logger,
-		queries: queries,
+		logger:  logger.New(infoLog, errorLog),
+		models: models,
 	}
 
 	srv := &http.Server{
@@ -69,10 +79,10 @@ func main() {
 		WriteTimeout: 30 * time.Second,
 	}
 
-	logger.Printf("starting server  on %v", app.cfg.port)
+	defaultLogger.Printf("starting server  on %v", app.cfg.port)
 	err = srv.ListenAndServe()
 	if err != nil {
-		logger.Fatal(err)
+		defaultLogger.Fatal(err)
 		return
 	}
 

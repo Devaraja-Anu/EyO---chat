@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -16,8 +17,7 @@ type User struct {
 }
 
 var ErrDuplicateUsername = errors.New("duplicate username")
-
-
+var ErrUserNotFound  = errors.New("user not Found")
 type UserModel struct {
 	DB *pgxpool.Pool
 }
@@ -40,6 +40,21 @@ func (m UserModel) Insert(ctx context.Context, user *User) error {
 	 }
 
 	 return nil
+}
 
+func (m UserModel) GetByUsername(ctx context.Context,username string) (*User, error){
 
+	query := `SELECT id,username, created_at FROM users where username  = $1`
+
+	var userData User
+
+	err := m.DB.QueryRow(ctx,query,username).Scan(&userData.ID,&username,&userData.CreatedAt)
+
+	if err != nil {
+		if  errors.Is(err,pgx.ErrNoRows){
+			return nil, ErrUserNotFound
+		}
+	}
+
+	return  &userData, nil
 }

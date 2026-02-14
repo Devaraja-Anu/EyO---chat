@@ -21,7 +21,7 @@ services:
     ports:
       - "4000:4000"
     environment:
-      DATABASE_DSN: postgres://e2ee:devpassword@db:5432/e2eechat?sslmode=disable
+      DB_URL: postgres://e2ee:devpassword@db:5432/e2eechat?sslmode=disable
 
 volumes:
   postgres_data:

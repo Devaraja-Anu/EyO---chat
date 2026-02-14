@@ -40,7 +40,7 @@ func main() {
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime)
 
-	godotenv.Load()
+	godotenv.Load("../.env")
 
 	dsn := os.Getenv("DB_URL")
 	if dsn == "" {

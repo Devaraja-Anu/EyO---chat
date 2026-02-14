@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -78,4 +79,20 @@ func (app *application) ReadJSON(w http.ResponseWriter, r *http.Request, destina
 	}
 
 	return nil
+}
+
+// all kinds of  weird encodings so to fix,
+func (app *application) decodePublicKey(s string) ([]byte,error){
+
+	b,err := base64.StdEncoding.DecodeString(s)
+	if err == nil {
+		return  b,nil
+	}
+
+	b,err = base64.RawStdEncoding.DecodeString(s)
+	if err == nil {
+		return b,nil
+	}
+
+	return nil, errors.New("invalind public key encoding")
 }

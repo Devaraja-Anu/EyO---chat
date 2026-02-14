@@ -1,0 +1,5 @@
+CREATE TABLE identity_keys (
+user_id BIGINT PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+public_key BYTEA NOT NULL,
+created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
